@@ -1,3 +1,3 @@
 # NeuralNetwork tutorials
 
-List of basic NN wrote for practice, all of them very improovable and optimizable
+Collection of basic NNs wrote for practice, all of them very improvable
