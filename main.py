@@ -29,7 +29,7 @@ image_count = len(list(glob(os.path.join(data_dir, '*/*.jpg'))))
 
 #for every run the program will create a subfolder with all the data(model summary, graph,
 # hyperparameters etc, update manually try num at every num)
-try_num = 46
+try_num = 47
 
 dir = os.path.join(project_dir, 'try_{try_num}'.format(try_num=try_num))
 if os.path.exists(dir):
@@ -45,7 +45,7 @@ drop_rate_fc = 0.6
 learning_rate = 1e-5
 epochs = 550
 validation_split = 0.2
-l2_penalty = 7e-3
+l2_penalty = 1e-2
 augment_param = 0.4
 
 train_ds = tf.keras.utils.image_dataset_from_directory(
@@ -112,13 +112,7 @@ model = Sequential([
     layers.Conv2D(32, 3, padding='same'),
     layers.BatchNormalization(),
     layers.Activation('relu'),
-    layers.Conv2D(32, 3, padding='same'),
-    layers.BatchNormalization(),
-    layers.Activation('relu'),
     layers.MaxPooling2D(),
-    layers.Conv2D(64, 3, padding='same'),
-    layers.BatchNormalization(),
-    layers.Activation('relu'),
     layers.Conv2D(64, 3, padding='same'),
     layers.BatchNormalization(),
     layers.Activation('relu'),
@@ -132,9 +126,6 @@ model = Sequential([
     layers.Conv2D(128, 3, padding='same'),
     layers.BatchNormalization(),
     layers.Activation('relu'),
-    layers.Conv2D(128, 3, padding='same'),
-    layers.BatchNormalization(),
-    layers.Activation('relu'),
     layers.MaxPooling2D(),
     layers.Conv2D(256, 3, padding='same'),
     layers.BatchNormalization(),
@@ -142,13 +133,7 @@ model = Sequential([
     layers.Conv2D(256, 3, padding='same'),
     layers.BatchNormalization(),
     layers.Activation('relu'),
-    layers.Conv2D(256, 3, padding='same'),
-    layers.BatchNormalization(),
-    layers.Activation('relu'),
     layers.MaxPooling2D(),
-    layers.Conv2D(512, 3, padding='same'),
-    layers.BatchNormalization(),
-    layers.Activation('relu'),
     layers.Conv2D(512, 3, padding='same'),
     layers.BatchNormalization(),
     layers.Activation('relu'),
@@ -157,9 +142,9 @@ model = Sequential([
     layers.Activation('relu'),
     layers.MaxPooling2D(),
     layers.Flatten(),
-    layers.Dense(1024, activation='relu', activity_regularizer=regularizers.L2(l2_penalty)),
+    layers.Dense(1024, activation='relu', kernel_regularizer=regularizers.L2(l2_penalty)),
     layers.Dropout(drop_rate_fc),
-    layers.Dense(1024, activation='relu', activity_regularizer=regularizers.L2(l2_penalty)),
+    layers.Dense(1024, activation='relu', kernel_regularizer=regularizers.L2(l2_penalty)),
     layers.Dropout(drop_rate_fc),
     layers.Dense(5, activation='softmax')
 ])
@@ -231,4 +216,5 @@ with open(hyper_parameters_file_path, 'a') as f:
     f.write('img_width: %d\n' % img_width)
     f.write('l2_penalty: %f\n' % l2_penalty)
     f.write('augment_param: %f\n' % augment_param)
+    f.write('used kernel_reg\n')
     f.write('------------\n')
