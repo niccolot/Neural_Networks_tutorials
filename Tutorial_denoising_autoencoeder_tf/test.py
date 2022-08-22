@@ -46,7 +46,7 @@ test_arr = prep_images(test_images)
 
 
 #put here best .h5 model
-autoencoder = keras.models.load_model()
+autoencoder = keras.models.load_model(autoencoder.h5)
 
 #extract one random dirty imge from the test set
 np.random.seed(int(time.time()))
