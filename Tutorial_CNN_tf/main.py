@@ -11,9 +11,9 @@ import tensorflow as tf
 import pandas as pd
 from glob import glob
 from tensorflow import keras
-from tensorflow.keras import layers
-from tensorflow.keras import regularizers
-from tensorflow.keras.models import Sequential
+from keras import layers
+from keras import regularizers
+from keras.models import Sequential
 
 #it allocates VRAM gradually and not all at once
 physical_devices = tf.config.list_physical_devices("GPU")
@@ -21,32 +21,41 @@ tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 #write here your path to this project
 project_dir = r'C:\Users\nico_\PycharmProjects\Tutorial_CNN_tf'
-
 data_dir = os.path.join(project_dir, 'flower_photos')
-
-#total number of train/valid images, glob returns an iterable over all the .jpg files
-image_count = len(list(glob(os.path.join(data_dir, '*/*.jpg'))))
 
 #for every run the program will create a subfolder with all the data(model summary, graph,
 # hyperparameters etc, update manually try num at every num)
-try_num = 52
+try_num = 103
 
-dir = os.path.join(project_dir, 'try_{try_num}'.format(try_num=try_num))
-if os.path.exists(dir):
+try_dir = os.path.join(project_dir, 'try_{try_num}'.format(try_num=try_num))
+if os.path.exists(try_dir):
     raise Exception("Directory name already used, update try_num")
 else:
-    os.mkdir(dir)
+    os.mkdir(try_dir)
 
 #hyper_parameters
 batch_size = 32
-img_height = 224
-img_width = 224
-drop_rate_fc = 0.8
-learning_rate = 1e-5
-epochs = 550
+img_height = 180
+img_width = 180
+drop_rate_conv = 0.05
+drop_rate_fc = 0.6
+learning_rate = 0.00074126
+epochs = 250
 validation_split = 0.2
-l2_penalty = 1e-3
-augment_param = 0.4
+l2_penalty = 0.0042888
+
+hyper_parameters_file_path = os.path.join(try_dir, 'hyper_parameters.txt')
+
+with open(hyper_parameters_file_path, 'a') as f:
+    f.write('batch_size: %d\n' % batch_size)
+    f.write('(spatialdropout) drop_rate_conv: %.2f\n' % drop_rate_conv)
+    f.write('drop_rate_fc: %.2f\n' % drop_rate_fc)
+    f.write('learning_rate: %f\n' % learning_rate)
+    f.write('validation_split: %.2f\n' % validation_split)
+    f.write('img_height: %d\n' % img_height)
+    f.write('img_width: %d\n' % img_width)
+    f.write('l2_penalty: %f\n' % l2_penalty)
+    f.write('------------\n')
 
 train_ds = tf.keras.utils.image_dataset_from_directory(
     data_dir,
@@ -89,64 +98,70 @@ for images, labels in train_ds.take(1):
 plt.show()
 '''
 
+#total number of train/valid images, glob returns an iterable over all the .jpg files
+image_count = len(list(glob(os.path.join(data_dir, '*/*.jpg'))))
+
 #this speed up the loading optimizing training time
 # .cache() caches the dataset in order to have to open the file only for the first epoch
+#
 # .shuffle() shuffle the data, the argument is how many images to shuffle every epoch and so
 # it must be greater or equal to the train set, here is set equal to the entirety of the dataset
+# if it's greater it does a uniform shuffle
+#
 # .prefetch() is to load the next batch while the current is training
 train_ds = train_ds.cache().shuffle(image_count).prefetch(buffer_size=tf.data.AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
 
 data_augmentation = keras.Sequential([
-    layers.RandomFlip("horizontal", input_shape=(img_height, img_width, 3)),
-    layers.RandomRotation(augment_param, seed=25),
-    layers.RandomZoom(augment_param, seed=25)
+    layers.RandomFlip("horizontal_and_vertical", input_shape=(img_height, img_width, 3)),
+    layers.RandomRotation(0.25, seed=25),
+    layers.RandomZoom(height_factor=(-0.2, -0.1), seed=25),
+    layers.RandomCrop(img_height, img_width, seed=25),
+    layers.GaussianNoise(1.0, seed=25)
 ])
 
 model = Sequential([
     data_augmentation,
     layers.Rescaling(1. / 255, input_shape=(img_height, img_width, 3)),
-    layers.Conv2D(32, 3, padding='same'),
-    layers.BatchNormalization(),
+    layers.Conv2D(16, 3, padding='same'),
     layers.Activation('relu'),
-    layers.Conv2D(32, 3, padding='same'),
-    layers.BatchNormalization(),
+    layers.SpatialDropout2D(drop_rate_conv),
+    layers.Conv2D(16, 3, padding='same'),
     layers.Activation('relu'),
+    layers.SpatialDropout2D(drop_rate_conv),
+    layers.MaxPooling2D(),
+    layers.Conv2D(32, 3, padding='same'),
+    layers.Activation('relu'),
+    layers.SpatialDropout2D(drop_rate_conv),
+    layers.Conv2D(32, 3, padding='same'),
+    layers.Activation('relu'),
+    layers.SpatialDropout2D(drop_rate_conv),
     layers.MaxPooling2D(),
     layers.Conv2D(64, 3, padding='same'),
-    layers.BatchNormalization(),
     layers.Activation('relu'),
+    layers.SpatialDropout2D(drop_rate_conv),
     layers.Conv2D(64, 3, padding='same'),
-    layers.BatchNormalization(),
     layers.Activation('relu'),
+    layers.SpatialDropout2D(drop_rate_conv),
     layers.MaxPooling2D(),
     layers.Conv2D(128, 3, padding='same'),
-    layers.BatchNormalization(),
     layers.Activation('relu'),
+    layers.SpatialDropout2D(drop_rate_conv),
     layers.Conv2D(128, 3, padding='same'),
-    layers.BatchNormalization(),
     layers.Activation('relu'),
+    layers.SpatialDropout2D(drop_rate_conv),
     layers.MaxPooling2D(),
     layers.Conv2D(256, 3, padding='same'),
-    layers.BatchNormalization(),
     layers.Activation('relu'),
+    layers.SpatialDropout2D(drop_rate_conv),
     layers.Conv2D(256, 3, padding='same'),
-    layers.BatchNormalization(),
     layers.Activation('relu'),
-    layers.MaxPooling2D(),
-    layers.Conv2D(512, 3, padding='same'),
-    layers.BatchNormalization(),
-    layers.Activation('relu'),
-    layers.Conv2D(512, 3, padding='same'),
-    layers.BatchNormalization(),
-    layers.Activation('relu'),
+    layers.SpatialDropout2D(drop_rate_conv),
     layers.MaxPooling2D(),
     layers.Flatten(),
-    layers.Dense(1024, activation='relu', activity_regularizer=regularizers.L2(l2_penalty)),
+    layers.Dense(256, activation='relu', activity_regularizer=regularizers.L2(l2_penalty)),
     layers.Dropout(drop_rate_fc),
-    layers.Dense(1024, activation='relu', activity_regularizer=regularizers.L2(l2_penalty)),
-    layers.Dropout(drop_rate_fc),
-    layers.Dense(5, activation='softmax')
+    layers.Dense(len(class_names), activation='softmax')
 ])
 
 model.summary()
@@ -155,10 +170,10 @@ model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
               loss=tf.keras.losses.CategoricalCrossentropy(),
               metrics=['accuracy'])
 
-model_file_path = os.path.join(project_dir, 'try_{try_num}'.format(try_num=try_num), 'model.h5')
+model_file_path = os.path.join(try_dir, 'model.h5')
 
 callbacks = [
-    tf.keras.callbacks.EarlyStopping(patience=35,
+    tf.keras.callbacks.EarlyStopping(patience=60,
                                      monitor="val_loss"),
     tf.keras.callbacks.ModelCheckpoint(filepath=model_file_path,
                                        save_best_only=True)
@@ -171,7 +186,7 @@ history = model.fit(
     callbacks=callbacks
 )
 
-hist_csv_file_path = os.path.join(project_dir, 'try_{try_num}'.format(try_num=try_num), 'history_csv')
+hist_csv_file_path = os.path.join(try_dir, 'history_csv')
 
 hist_df = pd.DataFrame(history.history)
 hist_csv_file = hist_csv_file_path
@@ -186,7 +201,7 @@ val_loss = history.history['val_loss']
 
 epochs_range = range(len(loss))
 
-plt.figure(figsize=(5, 5))
+plt.figure(figsize=(10, 10))
 plt.subplot(1, 2, 1)
 plt.plot(epochs_range, acc, label='Training Accuracy')
 plt.plot(epochs_range, val_acc, label='Validation Accuracy')
@@ -200,21 +215,9 @@ plt.legend(loc='upper right')
 plt.title('Training and Validation Loss')
 plt.show()
 
-model_summary_file_path = os.path.join(project_dir, 'try_{try_num}'.format(try_num=try_num), 'model_summary.txt')
-hyper_parameters_file_path = os.path.join(project_dir, 'try_{try_num}'.format(try_num=try_num), 'hyper_parameters.txt')
+model_summary_file_path = os.path.join(try_dir, 'model_summary.txt')
 
 with open(model_summary_file_path, 'a') as f:
     model.summary(print_fn=lambda x: f.write(x + '\n'))
 
-with open(hyper_parameters_file_path, 'a') as f:
-    f.write('batch_size: %d\n' % batch_size)
-    f.write('drop_rate_fc: %.2f\n' % drop_rate_fc)
-    f.write('learning_rate: %f\n' % learning_rate)
-    f.write('epochs: %d\n' % epochs)
-    f.write('validation_split: %.2f\n' % validation_split)
-    f.write('img_height: %d\n' % img_height)
-    f.write('img_width: %d\n' % img_width)
-    f.write('l2_penalty: %f\n' % l2_penalty)
-    f.write('augment_param: %f\n' % augment_param)
-    #f.write('used kernel_reg\n')
-    f.write('------------\n')
+

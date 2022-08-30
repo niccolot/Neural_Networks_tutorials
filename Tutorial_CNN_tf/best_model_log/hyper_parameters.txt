@@ -1,0 +1,9 @@
+batch_size: 32
+(spatialdropout) drop_rate_conv: 0.05
+drop_rate_fc: 0.60
+learning_rate: 0.000741
+validation_split: 0.20
+img_height: 180
+img_width: 180
+l2_penalty: 0.004289
+------------

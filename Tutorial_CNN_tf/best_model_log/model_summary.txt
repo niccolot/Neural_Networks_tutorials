@@ -1,0 +1,106 @@
+Model: "sequential_1"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ sequential (Sequential)     (None, 180, 180, 3)       0         
+                                                                 
+ rescaling (Rescaling)       (None, 180, 180, 3)       0         
+                                                                 
+ conv2d (Conv2D)             (None, 180, 180, 16)      448       
+                                                                 
+ activation (Activation)     (None, 180, 180, 16)      0         
+                                                                 
+ spatial_dropout2d (SpatialD  (None, 180, 180, 16)     0         
+ ropout2D)                                                       
+                                                                 
+ conv2d_1 (Conv2D)           (None, 180, 180, 16)      2320      
+                                                                 
+ activation_1 (Activation)   (None, 180, 180, 16)      0         
+                                                                 
+ spatial_dropout2d_1 (Spatia  (None, 180, 180, 16)     0         
+ lDropout2D)                                                     
+                                                                 
+ max_pooling2d (MaxPooling2D  (None, 90, 90, 16)       0         
+ )                                                               
+                                                                 
+ conv2d_2 (Conv2D)           (None, 90, 90, 32)        4640      
+                                                                 
+ activation_2 (Activation)   (None, 90, 90, 32)        0         
+                                                                 
+ spatial_dropout2d_2 (Spatia  (None, 90, 90, 32)       0         
+ lDropout2D)                                                     
+                                                                 
+ conv2d_3 (Conv2D)           (None, 90, 90, 32)        9248      
+                                                                 
+ activation_3 (Activation)   (None, 90, 90, 32)        0         
+                                                                 
+ spatial_dropout2d_3 (Spatia  (None, 90, 90, 32)       0         
+ lDropout2D)                                                     
+                                                                 
+ max_pooling2d_1 (MaxPooling  (None, 45, 45, 32)       0         
+ 2D)                                                             
+                                                                 
+ conv2d_4 (Conv2D)           (None, 45, 45, 64)        18496     
+                                                                 
+ activation_4 (Activation)   (None, 45, 45, 64)        0         
+                                                                 
+ spatial_dropout2d_4 (Spatia  (None, 45, 45, 64)       0         
+ lDropout2D)                                                     
+                                                                 
+ conv2d_5 (Conv2D)           (None, 45, 45, 64)        36928     
+                                                                 
+ activation_5 (Activation)   (None, 45, 45, 64)        0         
+                                                                 
+ spatial_dropout2d_5 (Spatia  (None, 45, 45, 64)       0         
+ lDropout2D)                                                     
+                                                                 
+ max_pooling2d_2 (MaxPooling  (None, 22, 22, 64)       0         
+ 2D)                                                             
+                                                                 
+ conv2d_6 (Conv2D)           (None, 22, 22, 128)       73856     
+                                                                 
+ activation_6 (Activation)   (None, 22, 22, 128)       0         
+                                                                 
+ spatial_dropout2d_6 (Spatia  (None, 22, 22, 128)      0         
+ lDropout2D)                                                     
+                                                                 
+ conv2d_7 (Conv2D)           (None, 22, 22, 128)       147584    
+                                                                 
+ activation_7 (Activation)   (None, 22, 22, 128)       0         
+                                                                 
+ spatial_dropout2d_7 (Spatia  (None, 22, 22, 128)      0         
+ lDropout2D)                                                     
+                                                                 
+ max_pooling2d_3 (MaxPooling  (None, 11, 11, 128)      0         
+ 2D)                                                             
+                                                                 
+ conv2d_8 (Conv2D)           (None, 11, 11, 256)       295168    
+                                                                 
+ activation_8 (Activation)   (None, 11, 11, 256)       0         
+                                                                 
+ spatial_dropout2d_8 (Spatia  (None, 11, 11, 256)      0         
+ lDropout2D)                                                     
+                                                                 
+ conv2d_9 (Conv2D)           (None, 11, 11, 256)       590080    
+                                                                 
+ activation_9 (Activation)   (None, 11, 11, 256)       0         
+                                                                 
+ spatial_dropout2d_9 (Spatia  (None, 11, 11, 256)      0         
+ lDropout2D)                                                     
+                                                                 
+ max_pooling2d_4 (MaxPooling  (None, 5, 5, 256)        0         
+ 2D)                                                             
+                                                                 
+ flatten (Flatten)           (None, 6400)              0         
+                                                                 
+ dense (Dense)               (None, 256)               1638656   
+                                                                 
+ dropout (Dropout)           (None, 256)               0         
+                                                                 
+ dense_1 (Dense)             (None, 5)                 1285      
+                                                                 
+=================================================================
+Total params: 2,818,709
+Trainable params: 2,818,709
+Non-trainable params: 0
+_________________________________________________________________
