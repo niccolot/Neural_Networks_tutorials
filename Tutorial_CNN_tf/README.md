@@ -12,8 +12,7 @@ CNN trained on the tensorflow flowers dataset
 
 ## The dataset
 
-The tensorflow flowers dataset contains a lot of wrong images, a lot of which not even portraing flowers, the dataset cleaned and actually used is stored in the
-dataset folder
+The tensorflow flowers dataset (https://www.tensorflow.org/datasets/catalog/tf_flowers) contains a lot of wrong images, a lot of which not even portraing flowers, for this project the dataset has been cleaned of the outliers
 
 ## Custom CNN
 
