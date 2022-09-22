@@ -10,6 +10,11 @@ CNN trained on the tensorflow flowers dataset
 
 -transfer_learning.py build a classifier based on a pretrained net from keras.applications and comprare the result with the custom naive implementation
 
+## The dataset
+
+The tensorflow flowers dataset contains a lot of wrong images, a lot of which not even portraing flowers, the dataset cleaned and actually used is stored in the
+dataset folder
+
 ## Custom CNN
 
 A standard architecture for a CNN, as one can see from the images it reaches around 85% accuracy in validation, decreasing to a not so great 77% at test time.
