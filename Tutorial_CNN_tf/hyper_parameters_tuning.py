@@ -23,7 +23,7 @@ img_width = 180
 epochs = 600
 validation_split = 0.2
 
-project_dir = r'C:\Users\nico_\PycharmProjects\Tutorial_CNN_tf'
+project_dir = os.getcwd()
 data_dir = os.path.join(project_dir, 'flower_photos')
 
 train_ds = tf.keras.utils.image_dataset_from_directory(
