@@ -1,6 +1,5 @@
 """
 CNN for tensorflow flowers dataset classification
-dataset url = http://download.tensorflow.org/example_images/flower_photos.tgz
 """
 
 import os
@@ -20,12 +19,12 @@ physical_devices = tf.config.list_physical_devices("GPU")
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 #write here your path to this project
-project_dir = r'C:\Users\nico_\PycharmProjects\Tutorial_CNN_tf'
+project_dir =os.getcwd()
 data_dir = os.path.join(project_dir, 'flower_photos')
 
 #for every run the program will create a subfolder with all the data(model summary, graph,
 # hyperparameters etc, update manually try num at every num)
-try_num = 103
+try_num = 1
 
 try_dir = os.path.join(project_dir, 'try_{try_num}'.format(try_num=try_num))
 if os.path.exists(try_dir):
@@ -80,23 +79,6 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
 )
 
 class_names = train_ds.class_names
-
-#in order to check some images
-'''
-for im_batch, labels_batch in train_ds:
-    print(im_batch.shape)
-    print(labels_batch.shape)
-    break
-
-plt.figure(figsize=(5, 5))
-for images, labels in train_ds.take(1):
-  for i in range(len(train_ds.class_names)):
-    ax = plt.subplot(2, 3, i + 1)
-    plt.imshow(images[i].numpy().astype("uint8"))
-    plt.title(class_names[labels[i]])
-    plt.axis("off")
-plt.show()
-'''
 
 #total number of train/valid images, glob returns an iterable over all the .jpg files
 image_count = len(list(glob(os.path.join(data_dir, '*/*.jpg'))))
