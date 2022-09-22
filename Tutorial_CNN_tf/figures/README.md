@@ -1,1 +1,1 @@
-figs and graphs concerning the project
+Figs and graphs concerning the project
