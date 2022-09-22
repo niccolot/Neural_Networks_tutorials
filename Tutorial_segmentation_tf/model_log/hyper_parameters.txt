@@ -1,0 +1,4 @@
+batch_size: 2
+image_size: 512
+drop_rate_conv: 0.20
+gamma: 2.000000
