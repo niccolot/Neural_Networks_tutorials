@@ -1,0 +1,22 @@
+Model: "model"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ input_2 (InputLayer)        [(None, 180, 180, 3)]     0         
+                                                                 
+ sequential (Sequential)     (None, 180, 180, 3)       0         
+                                                                 
+ efficientnetb0 (Functional)  (None, 6, 6, 1280)       4049571   
+                                                                 
+ global_average_pooling2d (G  (None, 1280)             0         
+ lobalAveragePooling2D)                                          
+                                                                 
+ dropout (Dropout)           (None, 1280)              0         
+                                                                 
+ dense (Dense)               (None, 5)                 6405      
+                                                                 
+=================================================================
+Total params: 4,055,976
+Trainable params: 6,405
+Non-trainable params: 4,049,571
+_________________________________________________________________
