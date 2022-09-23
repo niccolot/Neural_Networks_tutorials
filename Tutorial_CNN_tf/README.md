@@ -1,6 +1,6 @@
 # Tutorial_CNN_tf
 
-CNN trained on the tensorflow flowers dataset
+CNN trained on the tensorflow flowers dataset, the loss curves are related to training/validation while roc curves, confusion matrices and misclassified images refer to test time. 
 
 -main.py is for searching a decent architecture, it creates a folder at each try with all the train logs (model.summay, hyperparameters used, train history etc)
 
