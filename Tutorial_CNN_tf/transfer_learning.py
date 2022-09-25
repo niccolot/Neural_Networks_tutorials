@@ -133,23 +133,6 @@ val_ds = val_ds.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
 """
 BASE MODEL SELECTION AND TRANSFER LEARNING
 """
-"""
-base_model = tf.keras.applications.InceptionResNetV2(
-    include_top=False,
-    weights="imagenet",
-    input_shape=(img_height, img_width, 3),
-)
-"""
-
-"""
-base_model = keras.applications.EfficientNetV2S(
-    include_top=False,
-    weights="imagenet",
-    input_shape=(img_height, img_width, 3),
-    pooling='avg',
-    include_preprocessing=True,
-)
-"""
 
 base_model = keras.applications.EfficientNetB0(
     include_top = False,
