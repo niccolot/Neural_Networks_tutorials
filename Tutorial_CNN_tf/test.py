@@ -116,7 +116,7 @@ model = keras.models.load_model(model_file_path)
 
 results = model.evaluate(test_ds)
 print('\ntest_loss: %.2f' % results[0])
-print('test_accuracy: %.2f%%\n' % (results[1]*100))
+print('test_metric: %.2f%%\n' % (results[1]*100))
 
 predictions = model.predict(test_ds)
 
