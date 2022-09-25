@@ -22,21 +22,29 @@ targets_dict = {'0': 'daisy',
 
 
 #returns ROCAUC score of the model and plots the ROC curve
-def multiclass_roc_auc_score(y_test, y_pred, average="macro"):
+def multiclass_roc_auc_score(y_test, y_pred, target_list, multiclass=True, average="macro"):
 
     plt.figure(figsize=(6, 6))
-    lb = LabelBinarizer()
-    lb.fit(y_test)
-    y_test = lb.transform(y_test)
-    y_pred = lb.transform(y_pred)
 
-    for (idx, c_label) in enumerate(targets):
-        fpr, tpr, thresholds = roc_curve(y_test[:, idx].astype(int), y_pred[:, idx])
-        plt.plot(fpr, tpr, label='%s (AUC:%0.2f)' % (c_label, auc(fpr, tpr)))
+    if multiclass:
+        lb = LabelBinarizer()
+        lb.fit(y_test)
+        y_test = lb.transform(y_test)
+        y_pred = lb.transform(y_pred)
+
+        for (idx, c_label) in enumerate(target_list):
+            fpr, tpr, thresholds = roc_curve(y_test[idx, :], y_pred[idx, :])
+            plt.plot(fpr, tpr, label='%s (AUC:%0.2f)' % (c_label, auc(fpr, tpr)))
+
+    else:
+        fpr, tpr, thresholds = roc_curve(y_test, y_pred)
+        plt.plot(fpr, tpr, label='AUC:%0.2f' % auc(fpr, tpr))
+
     plt.plot(fpr, fpr, 'b-', label='Random Guessing')
     plt.legend()
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
+    plt.show()
 
     return roc_auc_score(y_test, y_pred, average=average)
 
