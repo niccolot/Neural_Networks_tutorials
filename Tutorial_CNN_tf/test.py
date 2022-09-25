@@ -22,27 +22,42 @@ targets_dict = {'0': 'daisy',
 
 
 #returns ROCAUC score of the model and plots the ROC curve
-def multiclass_roc_auc_score(y_test, y_pred, average="macro"):
+def multiclass_roc_auc_score(y_test, y_pred, target_list, multiclass=True, average="macro"):
 
     plt.figure(figsize=(6, 6))
-    lb = LabelBinarizer()
-    lb.fit(y_test)
-    y_test = lb.transform(y_test)
-    y_pred = lb.transform(y_pred)
 
-    for (idx, c_label) in enumerate(targets):
-        fpr, tpr, thresholds = roc_curve(y_test[:, idx].astype(int), y_pred[:, idx])
-        plt.plot(fpr, tpr, label='%s (AUC:%0.2f)' % (c_label, auc(fpr, tpr)))
+    if multiclass:
+        lb = LabelBinarizer()
+        lb.fit(y_test)
+        y_test = lb.transform(y_test)
+        y_pred = lb.transform(y_pred)
+
+        for (idx, c_label) in enumerate(target_list):
+            fpr, tpr, thresholds = roc_curve(y_test[idx, :], y_pred[idx, :])
+            plt.plot(fpr, tpr, label='%s (AUC:%0.2f)' % (c_label, auc(fpr, tpr)))
+
+    else:
+        fpr, tpr, thresholds = roc_curve(y_test, y_pred)
+        plt.plot(fpr, tpr, label='AUC:%0.2f' % auc(fpr, tpr))
+
     plt.plot(fpr, fpr, 'b-', label='Random Guessing')
     plt.legend()
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
+    plt.show()
 
     return roc_auc_score(y_test, y_pred, average=average)
 
 
-def get_errors(x_test, test_probs, pred_probs, num_errors=4):
+"""
+x_test is test dataset
 
+test_probs and pred_probs are respectively the one hot encoded test labes and 
+the predicted probabilities vectors (arranged in a tensor) that the sofmtax gives at test time
+
+num_errors is how many misslabeled images to show
+"""
+def get_errors(x_test, test_probs, pred_probs, num_errors=4):
     test_labels = np.argmax(test_probs, axis=1)
     pred_labels = np.argmax(pred_probs, axis=1)
 
@@ -71,19 +86,37 @@ def get_errors(x_test, test_probs, pred_probs, num_errors=4):
     return most_important_errors, pred_probs_errors, test_labels_errors, x_test_errors, pred_labels_errors
 
 
-def display_errors(errors_index, img_errors, pred_errors, obs_errors, target_dict):
+"""
+target_dict is a dictionary that associates numbers from 0 to num classes to
+the name of the classes e.g.
+
+target_dict = {
+    '0': class_0,
+    '1': class_1,
+    ...etc
+}
+"""
+def display_errors(target_dict, x_test, test_labels, predictions, nrows=2, ncols=2):
     n = 0
-    nrows = 2
-    ncols = 2
     fig, ax = plt.subplots(nrows, ncols)
-    fig.subplots_adjust(hspace=.5, wspace=.5)
+    fig.subplots_adjust(hspace=0.5, wspace=0.5)
+
+    errors_index, \
+    pred_probs_errors, \
+    test_labels_errors, \
+    img_errors, \
+    pred_labels_errors = get_errors(x_test, test_labels, predictions)
+
     for row in range(nrows):
         for col in range(ncols):
             error = errors_index[n]
             ax[row, col].imshow(img_errors[error])
-            ax[row, col].set_title("Predicted label: {}\nTrue label: {}".format(target_dict[str(pred_errors[error])],
-                                                                                target_dict[str(obs_errors[error])]))
+            ax[row, col].set_title(
+                "Predicted label: {}\nTrue label: {}".format(target_dict[str(pred_labels_errors[error])],
+                                                             target_dict[str(test_labels_errors[error])]))
             n += 1
+
+    plt.show()
 
 
 project_dir = os.getcwd()
@@ -108,11 +141,13 @@ model = keras.models.load_model(model_file_path)
 
 results = model.evaluate(test_ds)
 print('\ntest_loss: %.2f' % results[0])
-print('test_accuracy: %.2f%%\n' % (results[1]*100))
+print('test_metric: %.2f%%\n' % (results[1]*100))
 
 predictions = model.predict(test_ds)
 
 test_labels = np.concatenate([y for x, y in test_ds], axis=0)
+x_test = np.concatenate([x for x, y in test_ds], axis=0)
+x_test = x_test.astype('float32') / 255.
 
 ConfusionMatrixDisplay.from_predictions(np.argmax(test_labels, axis=1),
                                         np.argmax(predictions, axis=1),
@@ -121,19 +156,10 @@ ConfusionMatrixDisplay.from_predictions(np.argmax(test_labels, axis=1),
                                         cmap='Blues')
 
 print('ROC AUC score:', multiclass_roc_auc_score(np.argmax(test_labels, axis=1),
-                                                 np.argmax(predictions, axis=1)))
+                                                 np.argmax(predictions, axis=1),
+                                                 target_list=targets))
 
 
-x_test = np.concatenate([x for x, y in test_ds], axis=0)
-x_test = x_test.astype('float32') / 255.
+display_errors(targets_dict, x_test, test_labels, predictions)
 
-
-
-most_important_errors, \
-pred_probs_errors, \
-test_labels_errors, \
-x_test_errors, \
-pred_labels_errors = get_errors(x_test, predictions, test_labels)
-
-display_errors(most_important_errors, x_test_errors, test_labels_errors, pred_labels_errors, targets_dict)
 plt.show()
