@@ -1,0 +1,10 @@
+batch_size: 32
+learning_rate: 1.000000e-04
+lr_fine_tuning: 7.000000e-07
+validation_split: 0.20
+img_height: 180
+img_width: 180
+drop_rate: 0.65
+drop_rate_conv: 0.40
+base model: EfficientNetB0
+l2_penalty: 0.100000

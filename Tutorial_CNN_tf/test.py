@@ -68,7 +68,7 @@ def get_errors(x_test, test_probs, pred_probs, num_errors=4):
     pred_labels_errors = pred_labels[error_labels]
     x_test_errors = x_test[error_labels]
 
-    # Probabilities of the wrong predicted numbers
+    # Probabilities of the wrong predictions
     y_pred_errors_prob = np.max(pred_probs_errors, axis=1)
 
     # Predicted probabilities of the true values in the error set
@@ -80,7 +80,7 @@ def get_errors(x_test, test_probs, pred_probs, num_errors=4):
     # Sorted list of the delta prob errors
     sorted_delta_errors = np.argsort(delta_pred_true_errors)
 
-    # Top 6 errors
+    # Top errors
     most_important_errors = sorted_delta_errors[-num_errors:]
 
     return most_important_errors, pred_probs_errors, test_labels_errors, x_test_errors, pred_labels_errors
@@ -128,14 +128,14 @@ img_width = 180
 test_ds = keras.utils.image_dataset_from_directory(
     test_data_dir,
     label_mode='categorical',
-    shuffle=False,
+    shuffle=False,#important to switch off shuffling otherwise the labels will be get mixed resulting in a random confusion matrix and roc curve
     validation_split=None,
     subset=None,
     color_mode='rgb',
     image_size=(img_height, img_width)
 )
 
-model_file_path = os.path.join(r'C:\Users\nico_\PycharmProjects\Tutorial_CNN_tf\try_1', 'model.h5')
+model_file_path = """insert here the path to the .h5 file to test"""
 
 model = keras.models.load_model(model_file_path)
 
