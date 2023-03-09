@@ -76,7 +76,7 @@ This is not the case during fine tuning where the curves are decently overlappin
 
 In order to improve the model one could look into the off diagonal term of the confusion matrix between roses and tulips with some ad-hoc data augmentation and explore a different architecture with batchnorm, bigger fully connected layers of deeper filters
 
-### Transer learning model
+### Transfer learning model
 
 With some effort one could write a better pipeline where the regularization is applied during finetuning (looking at the firt loss plot of the tl model it is clear that regularizations is not needed), maybe allowing the use of a slightly greater learning rate and obtaining a smoother accuracy curve.
 
