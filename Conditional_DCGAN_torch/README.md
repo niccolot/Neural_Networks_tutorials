@@ -1,0 +1,1 @@
+Conditional deep convolutional generative adversarial network trained on FashionMNIST
