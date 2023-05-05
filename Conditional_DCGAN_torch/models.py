@@ -37,10 +37,10 @@ class Generator(nn.Module):
 
         self.main = nn.Sequential(
             # in_channels must have a +1 for the label embedding
-            nn.ConvTranspose2d(self.img_size*4+1, self.img_size*2, kernel_size=4, stride=1, padding=1, bias=False),  # (batch,28*2,14,14)
+            nn.ConvTranspose2d(self.img_size*4+1, self.img_size*2, kernel_size=4, stride=2, padding=1, bias=False),  # (batch,28*2,14,14)
             nn.BatchNorm2d(self.img_size*2),
             nn.ReLU(),
-            nn.ConvTranspose2d(self.img_size*2, self.img_size, kernel_size=4, stride=1, padding=1, bias=False),  # (batch,28,28,28)
+            nn.ConvTranspose2d(self.img_size*2, self.img_size, kernel_size=4, stride=2, padding=1, bias=False),  # (batch,28,28,28)
             nn.BatchNorm2d(self.img_size),
             nn.ReLU(),
             nn.Conv2d(self.img_size, self.img_channels, kernel_size=3, stride=1, padding=1, bias=False),  # (batch,img_channels,28,28)
@@ -100,7 +100,7 @@ class Discriminator(nn.Module):
         embedded_label = self.label_embedding(label)
         embedded_label = embedded_label.view(-1,1,self.img_size,self.img_size)
 
-        inputs = torch.cat((image, embedded_label), sim=1)
+        inputs = torch.cat((image, embedded_label), dim=1)
         result = self.main(inputs)
         
         return result
