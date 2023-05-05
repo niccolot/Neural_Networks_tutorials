@@ -2,19 +2,6 @@ import torch
 from torch import nn
 
 
-def custom_weights_init(model):
-    """
-    the article uses particular initializations for the weights
-    of convs and normalization layers
-    """
-    classname = model.__class__.__name__
-    if classname.find('Conv') != -1:
-        nn.init.normal_(model.weight.data, 0.0, 0.02)
-    elif classname.find('BatchNorm') != -1:
-        nn.init.normal_(model.weight.data, 1.0, 0.02)
-        nn.init.constant_(model.bias.data, 0)
-
-
 class Generator(nn.Module):
     def __init__(self, latent_space_dim, img_size=28, img_channels=1, n_classes=10, embedding_dim=50):
         super().__init__()
@@ -44,7 +31,7 @@ class Generator(nn.Module):
             nn.BatchNorm2d(self.img_size),
             nn.ReLU(),
             nn.Conv2d(self.img_size, self.img_channels, kernel_size=3, stride=1, padding=1, bias=False),  # (batch,img_channels,28,28)
-            nn.Tanh()  # in the article pixel values are normalized [-1,1]
+            nn.Tanh()  
         )
 
 
@@ -80,7 +67,7 @@ class Discriminator(nn.Module):
         self.main = nn.Sequential(
             # same +1 in in_channels for the label embedding
             nn.Conv2d(self.img_channels+1, self.img_size, kernel_size=4, stride=2, padding=1, bias=False),  # (batch,28,14,14)
-            nn.LeakyReLU(0.2), # the article uses leaky ReLU with slope 0.2
+            nn.LeakyReLU(0.2), 
             nn.Conv2d(self.img_size, self.img_size*2, kernel_size=4, stride=2, padding=1, bias=False),  # (batch,28*2,7,7)
             nn.BatchNorm2d(self.img_size*2),
             nn.LeakyReLU(0.2),
