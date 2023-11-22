@@ -15,7 +15,7 @@ with $Q'$ the target network. Double DQN consists in choosing actions
 for the next state using the trained network, but taking values of $Q$ from the target network, resulting in the update rule
 
 $$
-Q(s_t, a_t) = r_t + \gamma \max_aQ'\Big(s_{t+1}, \argmax_aQ(s_{t+1}, a)\Big)
+Q(s_t, a_t) = r_t + \gamma \max_aQ'\Big(s_{t+1}, \textrm{argmax} \\{Q(s_{t+1}, a)\\}_a\Big)
 $$
 
 This is implemented as a boolean option in the `optimize_model` method of the agent in `agent.py`
@@ -83,7 +83,7 @@ This is implemented as another neural network model in the `models.py` file that
 The synchronization between the policy and target networks is done with soft update rule presented in [this article](https://arxiv.org/abs/1509.02971) in which the weights of the target net are updated each step with the rule
 
 $$
-\theta'_{target} = \tau\theta_{policy} + (1-\tau)\theta_{target}
+\theta_{target}' = \tau\theta_{policy} + (1-\tau)\theta_{target}
 $$
 
 with $\tau \ll1$.
